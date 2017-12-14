@@ -91,9 +91,8 @@ func main() {
 							z, err := x.Derive(path, false)
 							if err != nil {
 								return cli.NewExitError("ethsign: couldn't use Ledger: needs to be in Ethereum app with browser support off", 1)
-							} else {
-								fmt.Printf("%s ledger-%s\n", z.Address.Hex(), pathstr)
 							}
+							fmt.Printf("%s ledger-%s\n", z.Address.Hex(), pathstr)
 						}
 					}
 				}
@@ -294,12 +293,12 @@ func main() {
 				},
 				cli.StringFlag{
 					Name:  "data",
-					Usage: "data to sign",
+					Usage: "data (in hex) to sign",
 				},
 			},
 			Action: func(c *cli.Context) error {
 				requireds := []string{
-					"from",
+					"from", "data",
 				}
 
 				for _, required := range requireds {
@@ -311,8 +310,8 @@ func main() {
 				from := common.HexToAddress(c.String("from"))
 
 				dataString := c.String("data")
-				if dataString == "" {
-					dataString = "0x"
+				if !strings.HasPrefix(dataString, "0x") {
+					dataString = "0x" + dataString
 				}
 				data := hexutil.MustDecode(dataString)
 
